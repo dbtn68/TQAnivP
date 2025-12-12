@@ -3,104 +3,35 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>예비번호 총정리</title>
+  <title>예비번호 총정리 (디버그 모드)</title>
   <style>
-    body{
-      font-family: "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, Arial;
-      padding: 20px;
-      background:#f7f8fb;
-      color:#111;
-    }
-    .table-wrap{
-      max-width:980px;
-      margin:0 auto;
-      background:#fff;
-      border-radius:8px;
-      box-shadow:0 6px 18px rgba(20,20,40,0.06);
-      overflow:hidden;
-    }
-    .header{
-      padding:14px 16px;
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px;
-      align-items:center;
-      justify-content:space-between;
-    }
-    h2{ margin:0; font-size:16px; }
-    .controls{
-      display:flex;
-      gap:8px;
-      align-items:center;
-      flex-wrap:wrap;
-    }
-
-    .btn{
-      padding:8px 12px;
-      border-radius:8px;
-      border:1px solid #111827;
-      background:#ffffff;
-      color:#111827;
-      font-size:13px;
-      cursor:pointer;
-      transition:0.15s;
-      box-shadow:0 2px 6px rgba(17,24,39,0.06);
-    }
-
-    .btn.active{
-      background:#111827 !important;
-      color:#fff !important;
-    }
-
-    table{
-      width:100%;
-      border-collapse:collapse;
-      font-size:14px;
-    }
-    thead{
-      background:linear-gradient(90deg,#0ea5a4,#7c3aed);
-      color:#fff;
-      text-align:left;
-    }
-    thead th{
-      padding:14px 16px;
-      font-weight:700;
-    }
-    tbody td{
-      padding:12px 16px;
-      border-bottom:1px solid #eef2f6;
-      vertical-align:top;
-    }
-    tbody tr:last-child td{ border-bottom: none; }
-    .center { text-align:center; }
-
+    body{ font-family: "Noto Sans KR", system-ui, -apple-system, "Segoe UI", Roboto, Arial; padding:20px; background:#f7f8fb; color:#111; }
+    .table-wrap{ max-width:1000px; margin:0 auto; background:#fff; border-radius:8px; box-shadow:0 6px 18px rgba(20,20,40,0.06); overflow:hidden; }
+    .header{ padding:14px 16px; display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+    .controls{ display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .btn{ padding:8px 12px; border-radius:8px; border:1px solid #111827; background:#fff; cursor:pointer; }
+    .btn.active{ background:#111827; color:#fff; }
+    table{ width:100%; border-collapse:collapse; font-size:14px; }
+    thead{ background:linear-gradient(90deg,#0ea5a4,#7c3aed); color:#fff; text-align:left; }
+    thead th{ padding:14px 12px; font-weight:700; }
+    tbody td{ padding:12px 12px; border-bottom:1px solid #eef2f6; vertical-align:top; }
+    .center{ text-align:center; }
+    .debug-badge{ display:inline-block; padding:4px 8px; border-radius:999px; background:#f1f5f9; color:#0f172a; font-size:12px; }
     @media (max-width:700px){
-      thead { display:none; }
-      table, tbody, tr, td { display:block; width:100%; }
-      tr { margin-bottom:10px; border-radius:6px; background:#fafafa; box-shadow:0 1px 0 rgba(0,0,0,0.02) inset; }
-      td { padding:10px 12px; border-bottom: none; }
-      td::before{
-        content: attr(data-label);
-        display:block;
-        font-weight:700;
-        margin-bottom:6px;
-        color:#555;
-      }
-      .controls{ width:100%; justify-content:flex-start; }
+      thead{ display:none; } table, tbody, tr, td{ display:block; width:100%; } tr{ margin-bottom:10px; border-radius:6px; background:#fafafa; }
+      td{ padding:10px 12px; } td::before{ content: attr(data-label); display:block; font-weight:700; margin-bottom:6px; color:#555; }
     }
-
-    .note { padding:14px 16px; font-size:13px; color:#555; }
   </style>
 </head>
 <body>
   <div class="table-wrap">
     <div class="header">
-      <h2>대학·학과 예비번호 목록</h2>
-
+      <h2>대학·학과 예비번호 (디버그)</h2>
       <div class="controls" role="toolbar" aria-label="표 정렬 옵션">
         <button class="btn" id="sortName">가나다순</button>
         <button class="btn" id="sortAsc">예비번호 빠른 순</button>
         <button class="btn" id="sortDesc">예비번호 늦은 순</button>
+        <button class="btn" id="recheck">파싱 재확인</button>
       </div>
     </div>
 
@@ -111,14 +42,17 @@
           <th>대학교명</th>
           <th>학과명</th>
           <th class="center">예비번호</th>
+          <th class="center">파싱번호 (디버그)</th>
         </tr>
       </thead>
       <tbody>
+        <!-- 예시 행들 -->
         <tr>
           <td data-label="수시">수시 2차</td>
           <td data-label="대학교명">수원과학대학교</td>
           <td data-label="학과명">멀티미디어디자인학과 (영상디자인전공)</td>
           <td data-label="예비번호" class="center">13</td>
+          <td data-label="파싱번호" class="center debug-badge"></td>
         </tr>
 
         <tr>
@@ -126,202 +60,131 @@
           <td data-label="대학교명">경기과학기술대학교</td>
           <td data-label="학과명">영상디자인과</td>
           <td data-label="예비번호" class="center">85</td>
+          <td data-label="파싱번호" class="center debug-badge"></td>
         </tr>
 
         <tr>
           <td data-label="수시">수시 1차</td>
-          <td data-label="대학교명">경기과학기술대학교</td>
-          <td data-label="학과명">전기공학과</td>
-          <td data-label="예비번호" class="center">35</td>
-        </tr>
-
-        <tr>
-          <td data-label="수시">수시 2차</td>
-          <td data-label="대학교명">동서울대학교</td>
-          <td data-label="학과명">콘텐츠크리에이터과</td>
-          <td data-label="예비번호" class="center">11</td>
-        </tr>
-
-        <tr>
-          <td data-label="수시">수시 2차</td>
-          <td data-label="대학교명">동서울대학교</td>
-          <td data-label="학과명">시각디자인과</td>
-          <td data-label="예비번호" class="center">39</td>
-        </tr>
-
-        <tr>
-          <td data-label="수시">수시 2차</td>
-          <td data-label="대학교명">신구대학교</td>
-          <td data-label="학과명">영상디자인과</td>
-          <td data-label="예비번호" class="center">22</td>
-        </tr>
-
-        <tr>
-          <td data-label="수시">수시 2차</td>
-          <td data-label="대학교명">신안산대학교</td>
-          <td data-label="학과명">영상콘텐츠과</td>
-          <td data-label="예비번호" class="center">51</td>
-        </tr>
-
-        <tr>
-          <td data-label="수시">수시 2차</td>
-          <td data-label="대학교명">안산대학교</td>
-          <td data-label="학과명">광고디자인과</td>
-          <td data-label="예비번호" class="center">35</td>
-        </tr>
-
-        <tr>
-          <td data-label="수시">수시 2차</td>
-          <td data-label="대학교명">안산대학교</td>
-          <td data-label="학과명">시각미디어디자인과</td>
-          <td data-label="예비번호" class="center">32</td>
-        </tr>
-
-        <tr>
-          <td data-label="수시">수시 2차</td>
-          <td data-label="대학교명">오산대학교</td>
-          <td data-label="학과명">디지털콘텐츠디자인계열 (영상미디어전공)</td>
-          <td data-label="예비번호" class="center">98</td>
-        </tr>
-
-        <tr>
-          <td data-label="수시">수시 2차</td>
           <td data-label="대학교명">장안대학교</td>
           <td data-label="학과명">영상미디어콘텐츠과</td>
-          <td data-label="예비번호" class="center">68</td>
-        </tr>
-
-        <tr>
-          <td data-label="수시">수시 2차</td>
-          <td data-label="대학교명">유한대학교</td>
-          <td data-label="학과명">시각디자인과</td>
-          <td data-label="예비번호" class="center">36</td>
+          <!-- 예시: 전각 숫자, NBSP, 보이지 않는 문자 등을 섞은 셀 -->
+          <td data-label="예비번호" class="center">　３５</td>
+          <td data-label="파싱번호" class="center debug-badge"></td>
         </tr>
 
         <tr>
           <td data-label="수시">수시 2차</td>
           <td data-label="대학교명">부천대학교</td>
           <td data-label="학과명">디지털미디어디자인학과</td>
-          <td data-label="예비번호" class="center">57</td>
-        </tr>
-
-        <tr>
-          <td data-label="수시">수시 2차</td>
-          <td data-label="대학교명">동양미래대학교</td>
-          <td data-label="학과명">시각디자인과</td>
-          <td data-label="예비번호" class="center">84</td>
-        </tr>
-
-        <tr>
-          <td data-label="수시">수시 1차</td>
-          <td data-label="대학교명">연성대학교</td>
-          <td data-label="학과명">치기공과</td>
-          <td data-label="예비번호" class="center">142</td>
-        </tr>
-
-        <tr>
-          <td data-label="수시">수시 1차</td>
-          <td data-label="대학교명">연성대학교</td>
-          <td data-label="학과명">시각디자인과</td>
-          <td data-label="예비번호" class="center">33</td>
-        </tr>
-
-        <tr>
-          <td data-label="수시">수시 1차</td>
-          <td data-label="대학교명">대림대학교</td>
-          <td data-label="학과명">전기과</td>
-          <td data-label="예비번호" class="center">28</td>
-        </tr>
-
-        <tr>
-          <td data-label="수시">수시 1차</td>
-          <td data-label="대학교명">신안산대학교</td>
-          <td data-label="학과명">전기과</td>
-          <td data-label="예비번호" class="center">26</td>
-        </tr>
-
-        <tr>
-          <td data-label="수시">수시 1차</td>
-          <td data-label="대학교명">부천대학교</td>
-          <td data-label="학과명">치기공과</td>
-          <td data-label="예비번호" class="center">178</td>
-        </tr>
-
-        <tr>
-          <td data-label="수시">수시 1차</td>
-          <td data-label="대학교명">동남보건대학교</td>
-          <td data-label="학과명">치기공과</td>
-          <td data-label="예비번호" class="center">312</td>
-        </tr>
-
-        <tr>
-          <td data-label="수시">수시 2차</td>
-          <td data-label="대학교명">재능대학교</td>
-          <td data-label="학과명">사진영상미디어과</td>
-          <td data-label="예비번호" class="center">12</td>
-        </tr>
-
-        <tr>
-          <td data-label="수시">수시 2차</td>
-          <td data-label="대학교명">국제대학교</td>
-          <td data-label="학과명"></td>
+          <!-- 예시: 비어있는 경우 -->
           <td data-label="예비번호" class="center"></td>
+          <td data-label="파싱번호" class="center debug-badge"></td>
         </tr>
+
+        <!-- 실제 데이터 행을 여기에 두세요 -->
       </tbody>
     </table>
+
+    <div style="padding:12px 16px; font-size:13px; color:#555;">
+      ※ 디버그 모드: 파싱 결과가 빈칸이면 "Infinity"로 표시됩니다. DevTools 콘솔(오른쪽 클릭 → 검사 → Console)에서 더 많은 로그 확인 가능.
+    </div>
   </div>
 
   <script>
-    // 전각 숫자 → ASCII 숫자로 변환
-    function toAsciiDigits(str) {
-      return str.replace(/[\uFF10-\uFF19]/g, ch =>
+    // --- 강력한 숫자 정규화 & 파서 ---
+    // 1) 공통으로 제거할 보이지 않는 문자 목록
+    const INVISIBLE_REGEX = /[\u200B-\u200D\uFEFF\u00A0\u2060]/g; // 제로폭, BOM, NBSP, etc.
+
+    // 2) 전각 숫자 변환 (FF10-FF19 -> 0-9)
+    function toAsciiFromFullwidth(s) {
+      return s.replace(/[\uFF10-\uFF19]/g, ch =>
         String.fromCharCode(ch.charCodeAt(0) - 0xFF10 + 0x30)
       );
     }
 
-    // 예비번호 파서 (전각·제로폭 문자·유니코드 숫자 대응)
-    function parseReserve(cellText) {
-      const t = (cellText || '').trim();
-      if (t === '') return Infinity;
-
-      // 제로폭/보이지 않는 문자 제거
-      let cleaned = t.replace(/[\u200B-\u200D\uFEFF]/g, '');
-
-      // 전각 숫자 ASCII로 변환
-      cleaned = toAsciiDigits(cleaned);
-
-      // 숫자 또는 -숫자 추출
-      const m = cleaned.match(/-?\d+/u);
-      if (!m) return Infinity;
-
-      const n = parseInt(m[0], 10);
-      return Number.isNaN(n) ? Infinity : n;
+    // 3) Unicode 숫자(범용) -> ASCII로 치환 시도
+    //    최신 엔진: \p{Nd} 사용. 없으면 폴백으로 개별 문자에 Number() 적용.
+    function normalizeUnicodeDigits(s) {
+      try {
+        // 최신 브라우저: 연속된 숫자 그룹(\p{Nd}+)을 찾아 각 문자마다 Number(ch)로 변환
+        return s.replace(/\p{Nd}+/gu, seq =>
+          seq.split('').map(ch => {
+            const v = Number(ch);
+            return Number.isFinite(v) ? String(v) : ch;
+          }).join('')
+        );
+      } catch (e) {
+        // 폴백: 모든 문자 검사해서 Number(ch)로 숫자라면 대치
+        return s.split('').map(ch => {
+          const v = Number(ch);
+          return Number.isFinite(v) ? String(v) : ch;
+        }).join('');
+      }
     }
 
+    // 4) 최종 정리: 공백 제거, 전각->ASCII, 유니코드 숫자->ASCII
+    function normalizeNumberLikeString(s) {
+      if (!s) return '';
+      let out = String(s);
+      // replace common HTML NBSP (in case innerHTML had &nbsp;)
+      out = out.replace(/\u00A0/g, ' ');
+      out = out.replace(INVISIBLE_REGEX, '');
+      out = toAsciiFromFullwidth(out);
+      out = normalizeUnicodeDigits(out);
+      // collapse multiple spaces
+      out = out.replace(/\s+/g, ' ').trim();
+      return out;
+    }
+
+    // 5) 파서: 숫자(또는 -숫자) 연속체를 찾아 파싱. 없으면 Infinity 반환.
+    function parseReserve(cellText) {
+      const raw = cellText == null ? '' : String(cellText);
+      const cleaned = normalizeNumberLikeString(raw);
+      // console.debug('normalize:', { raw, cleaned }); // 로그은 아래에서 처리
+      const m = cleaned.match(/-?\d+/u);
+      if (!m) return Infinity;
+      const val = parseInt(m[0].replace(/[^\d\-]/g, ''), 10);
+      return Number.isNaN(val) ? Infinity : val;
+    }
+
+    // --- 유틸: 파싱 결과를 테이블에 표시하고 콘솔에 로깅 ---
     (function () {
       const table = document.getElementById('resultTable');
       const tbody = table.querySelector('tbody');
       const btnName = document.getElementById('sortName');
       const btnAsc = document.getElementById('sortAsc');
       const btnDesc = document.getElementById('sortDesc');
+      const btnRecheck = document.getElementById('recheck');
       const buttons = [btnName, btnAsc, btnDesc];
 
-      const getRows = () => Array.from(tbody.querySelectorAll('tr'));
+      function getRows() { return Array.from(tbody.querySelectorAll('tr')); }
 
       function activateButton(activeBtn) {
         buttons.forEach(b => b.classList.remove('active'));
-        activeBtn.classList.add('active');
+        if (activeBtn) activeBtn.classList.add('active');
+      }
+
+      // 디버그: 각 행의 파싱번호 표시 및 콘솔 로그
+      function annotateParsedValues() {
+        const rows = getRows();
+        console.group('=== 파싱 리포트 ===');
+        rows.forEach((r, i) => {
+          const cell = r.children[3]; // 예비번호 셀
+          const dbgCell = r.children[4]; // 파싱표시 셀
+          const raw = cell ? cell.textContent : '';
+          const parsed = parseReserve(raw);
+          dbgCell.textContent = (parsed === Infinity) ? 'Infinity' : String(parsed);
+          console.log(`row ${i+1}: raw=${JSON.stringify(raw)} -> parsed=${parsed}`);
+        });
+        console.groupEnd();
       }
 
       function sortByNameAsc() {
         activateButton(btnName);
         const rows = getRows();
-        rows.sort((a, b) => {
-          const nameA = a.children[1].textContent.trim();
-          const nameB = b.children[1].textContent.trim();
-          return nameA.localeCompare(nameB, 'ko');
-        });
+        rows.sort((a, b) => a.children[1].textContent.trim().localeCompare(b.children[1].textContent.trim(), 'ko'));
         rows.forEach(r => tbody.appendChild(r));
+        annotateParsedValues();
       }
 
       function sortByReserveAsc() {
@@ -330,14 +193,13 @@
         rows.sort((a, b) => {
           const ra = parseReserve(a.children[3].textContent);
           const rb = parseReserve(b.children[3].textContent);
-
           if (ra === rb) {
-            return a.children[1].textContent.trim()
-              .localeCompare(b.children[1].textContent.trim(), 'ko');
+            return a.children[1].textContent.trim().localeCompare(b.children[1].textContent.trim(), 'ko');
           }
           return ra - rb;
         });
         rows.forEach(r => tbody.appendChild(r));
+        annotateParsedValues();
       }
 
       function sortByReserveDesc() {
@@ -346,22 +208,22 @@
         rows.sort((a, b) => {
           const ra = parseReserve(a.children[3].textContent);
           const rb = parseReserve(b.children[3].textContent);
-
           if (ra === rb) {
-            return a.children[1].textContent.trim()
-              .localeCompare(b.children[1].textContent.trim(), 'ko');
+            return a.children[1].textContent.trim().localeCompare(b.children[1].textContent.trim(), 'ko');
           }
           return rb - ra;
         });
         rows.forEach(r => tbody.appendChild(r));
+        annotateParsedValues();
       }
 
       btnName.addEventListener('click', sortByNameAsc);
       btnAsc.addEventListener('click', sortByReserveAsc);
       btnDesc.addEventListener('click', sortByReserveDesc);
+      btnRecheck.addEventListener('click', annotateParsedValues);
 
-      // 첫 화면: 가나다순 정렬
-      sortByNameAsc();
+      // 처음 로드 시: 각 행에 디버그 컬럼이 비어있다면 채워주기
+      annotateParsedValues();
     })();
   </script>
 </body>
