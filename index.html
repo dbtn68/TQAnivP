@@ -35,7 +35,6 @@
       flex-wrap:wrap;
     }
 
-    /* 버튼 기본 스타일 (미선택 상태) */
     .btn{
       padding:8px 12px;
       border-radius:8px;
@@ -48,7 +47,6 @@
       box-shadow:0 2px 6px rgba(17,24,39,0.06);
     }
 
-    /* 선택된 버튼 스타일 */
     .btn.active{
       background:#111827 !important;
       color:#fff !important;
@@ -76,7 +74,6 @@
     tbody tr:last-child td{ border-bottom: none; }
     .center { text-align:center; }
 
-    /* 반응형 */
     @media (max-width:700px){
       thead { display:none; }
       table, tbody, tr, td { display:block; width:100%; }
@@ -130,7 +127,7 @@
           <td data-label="학과명">영상디자인과</td>
           <td data-label="예비번호" class="center">85</td>
         </tr>
-        
+
         <tr>
           <td data-label="수시">수시 1차</td>
           <td data-label="대학교명">경기과학기술대학교</td>
@@ -214,56 +211,56 @@
           <td data-label="학과명">시각디자인과</td>
           <td data-label="예비번호" class="center">84</td>
         </tr>
-        
+
         <tr>
           <td data-label="수시">수시 1차</td>
           <td data-label="대학교명">연성대학교</td>
           <td data-label="학과명">치기공과</td>
           <td data-label="예비번호" class="center">142</td>
         </tr>
-        
+
         <tr>
           <td data-label="수시">수시 1차</td>
           <td data-label="대학교명">연성대학교</td>
           <td data-label="학과명">시각디자인과</td>
           <td data-label="예비번호" class="center">33</td>
         </tr>
-        
+
         <tr>
           <td data-label="수시">수시 1차</td>
           <td data-label="대학교명">대림대학교</td>
           <td data-label="학과명">전기과</td>
           <td data-label="예비번호" class="center">28</td>
         </tr>
-        
+
         <tr>
           <td data-label="수시">수시 1차</td>
           <td data-label="대학교명">신안산대학교</td>
           <td data-label="학과명">전기과</td>
           <td data-label="예비번호" class="center">26</td>
         </tr>
-        
+
         <tr>
           <td data-label="수시">수시 1차</td>
           <td data-label="대학교명">부천대학교</td>
           <td data-label="학과명">치기공과</td>
           <td data-label="예비번호" class="center">178</td>
         </tr>
-        
+
         <tr>
           <td data-label="수시">수시 1차</td>
           <td data-label="대학교명">동남보건대학교</td>
           <td data-label="학과명">치기공과</td>
           <td data-label="예비번호" class="center">312</td>
         </tr>
-        
+
         <tr>
           <td data-label="수시">수시 2차</td>
           <td data-label="대학교명">재능대학교</td>
           <td data-label="학과명">사진영상미디어과</td>
           <td data-label="예비번호" class="center">12</td>
         </tr>
-        
+
         <tr>
           <td data-label="수시">수시 2차</td>
           <td data-label="대학교명">국제대학교</td>
@@ -275,7 +272,32 @@
   </div>
 
   <script>
-    // 정렬 스크립트 (버튼 스타일 active 처리 포함)
+    // 전각 숫자 → ASCII 숫자로 변환
+    function toAsciiDigits(str) {
+      return str.replace(/[\uFF10-\uFF19]/g, ch =>
+        String.fromCharCode(ch.charCodeAt(0) - 0xFF10 + 0x30)
+      );
+    }
+
+    // 예비번호 파서 (전각·제로폭 문자·유니코드 숫자 대응)
+    function parseReserve(cellText) {
+      const t = (cellText || '').trim();
+      if (t === '') return Infinity;
+
+      // 제로폭/보이지 않는 문자 제거
+      let cleaned = t.replace(/[\u200B-\u200D\uFEFF]/g, '');
+
+      // 전각 숫자 ASCII로 변환
+      cleaned = toAsciiDigits(cleaned);
+
+      // 숫자 또는 -숫자 추출
+      const m = cleaned.match(/-?\d+/u);
+      if (!m) return Infinity;
+
+      const n = parseInt(m[0], 10);
+      return Number.isNaN(n) ? Infinity : n;
+    }
+
     (function () {
       const table = document.getElementById('resultTable');
       const tbody = table.querySelector('tbody');
@@ -285,14 +307,6 @@
       const buttons = [btnName, btnAsc, btnDesc];
 
       const getRows = () => Array.from(tbody.querySelectorAll('tr'));
-
-      // 예비번호를 숫자로 변환 (빈칸은 Infinity로 처리)
-      function parseReserve(cellText) {
-        const t = (cellText || '').trim();
-        if (t === '') return Infinity;
-        const n = parseInt(t.replace(/[^0-9\-]/g, ''), 10);
-        return Number.isNaN(n) ? Infinity : n;
-      }
 
       function activateButton(activeBtn) {
         buttons.forEach(b => b.classList.remove('active'));
@@ -316,8 +330,10 @@
         rows.sort((a, b) => {
           const ra = parseReserve(a.children[3].textContent);
           const rb = parseReserve(b.children[3].textContent);
+
           if (ra === rb) {
-            return a.children[1].textContent.trim().localeCompare(b.children[1].textContent.trim(), 'ko');
+            return a.children[1].textContent.trim()
+              .localeCompare(b.children[1].textContent.trim(), 'ko');
           }
           return ra - rb;
         });
@@ -330,8 +346,10 @@
         rows.sort((a, b) => {
           const ra = parseReserve(a.children[3].textContent);
           const rb = parseReserve(b.children[3].textContent);
+
           if (ra === rb) {
-            return a.children[1].textContent.trim().localeCompare(b.children[1].textContent.trim(), 'ko');
+            return a.children[1].textContent.trim()
+              .localeCompare(b.children[1].textContent.trim(), 'ko');
           }
           return rb - ra;
         });
@@ -342,7 +360,7 @@
       btnAsc.addEventListener('click', sortByReserveAsc);
       btnDesc.addEventListener('click', sortByReserveDesc);
 
-      // 기본 정렬 = 대학교명 가나다순
+      // 첫 화면: 가나다순 정렬
       sortByNameAsc();
     })();
   </script>
